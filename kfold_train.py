@@ -34,4 +34,6 @@ def k_fold_train_model(X: pd.DataFrame, y: pd.DataFrame, k: int, model: str):
         all_test_acc.append(test_acc)
 
     print(f'Model: {model}, Average training accuracy: {np.mean(all_train_acc)}, Average test accuracy: {np.mean(all_test_acc)}')
+
+    return np.mean(all_train_acc), np.mean(all_test_acc)
     
