@@ -28,12 +28,24 @@ def k_fold_train_model(X: pd.DataFrame, y: pd.DataFrame, k: int, model: str):
         X_train[np.isnan(X_train)] = 0
         X_test[np.isnan(X_test)] = 0
 
-        train_acc, test_acc = train_model(X_train, X_test, y_train, y_test, model)
+        X_train = pd.DataFrame(X_train, columns=X.columns)
+        X_test = pd.DataFrame(X_test, columns=X.columns)
+
+        train_acc, test_acc, _ = train_model(X_train, X_test, y_train, y_test, model)
         
         all_train_acc.append(train_acc)
         all_test_acc.append(test_acc)
 
     print(f'Model: {model}, Average training accuracy: {np.mean(all_train_acc)}, Average test accuracy: {np.mean(all_test_acc)}')
 
-    return np.mean(all_train_acc), np.mean(all_test_acc)
+    print("Entire training set training:")
+    scaler = StandardScaler()
+    scaler.fit(X)
+    all = scaler.transform(X)
+    all[np.isnan(all)] = 0
+
+    X = pd.DataFrame(all, columns=X.columns)
+    _, _, clf = train_model(X, X, y, y, model)
+
+    return np.mean(all_train_acc), np.mean(all_test_acc), clf
     

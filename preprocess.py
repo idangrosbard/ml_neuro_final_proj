@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
+from typing import Tuple
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 
-def preprocess(X: pd.DataFrame, y: pd.Series):
+def preprocess(X: pd.DataFrame, y: pd.Series) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     # Choose only numeric columns
     X = X.select_dtypes(include=['number'])
 
@@ -23,5 +24,8 @@ def preprocess(X: pd.DataFrame, y: pd.Series):
     # Replace NaN with 0
     X_train[np.isnan(X_train)] = 0
     X_test[np.isnan(X_test)] = 0
+
+    X_train = pd.DataFrame(X_train, columns=X.columns)
+    X_test = pd.DataFrame(X_test, columns=X.columns)
 
     return X_train, X_test, y_train, y_test
