@@ -40,7 +40,7 @@ def plot_cor_mat(X: pd.DataFrame):
     fig = px.imshow(corr_mat)
     fig.show()
 
-def plot_norm_pca_variance(X: pd.DataFrame):
+def plot_norm_pca_variance(X: pd.DataFrame, cummulative: bool = False):
     X = X.select_dtypes(include=['number'])
     scaler = StandardScaler()
     scaler.fit(X)
@@ -50,7 +50,11 @@ def plot_norm_pca_variance(X: pd.DataFrame):
     n_feats = min(normed.shape[0], normed.shape[1])
     pca = PCA(n_components=n_feats)
     pca.fit(normed)
-    px.bar(x=range(1, n_feats + 1), y=pca.explained_variance_ratio_).show()
+    y = pca.explained_variance_ratio_
+    if cummulative:
+        for i in range(1, len(y)):
+            y[i] += y[i - 1]
+    px.line(x=range(1, n_feats + 1), y=y).show()
 
 def plot_pca_feature_correlation(X: pd.DataFrame):
     X = X.select_dtypes(include=['number'])
@@ -66,8 +70,8 @@ def plot_pca_feature_correlation(X: pd.DataFrame):
     # calculate the correlation between each feature and each principal component
     feat_norms = np.linalg.norm(normed.to_numpy(), 2.0, axis=1)[:, np.newaxis]
     row_normed = normed.to_numpy() / feat_norms
-    corr_mat = pca.components_ @ row_normed.transpose()
-    print(corr_mat)
+    corr_mat = row_normed @ pca.components_.transpose()
+    print(corr_mat.shape)
     corr_mat = pd.DataFrame(corr_mat, columns=X.columns)
     
     px.imshow(corr_mat).show()
