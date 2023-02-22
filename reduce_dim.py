@@ -50,30 +50,24 @@ def feat_pca_projection(X: pd.DataFrame, n_feats: int = 2) -> List[List[str]]:
 
 
 def plot_pc_feats_freq(pc_feats: List[str], pc_idx: int) -> None:
-    pc_total_feats = [len(pc) for pc in pc_feats]
-    pc_split_feats = [[] for _ in range(len(pc_feats))]
-    for i, pc in enumerate(pc_feats):    
-        temp = []
-        for feat in pc:
-            feat = feat.replace('FS_', '')
-            subwords = feat.split('_')
-            for sw in subwords:
-                temp.append(sw)
-        pc_split_feats[i] = temp
 
-    # plot word frequency
-    pc1 = pc_split_feats[pc_idx]
-    word_freq = {}
-    for word in pc1:
-        if word in word_freq:
-            word_freq[word] += 1
-        else:
-            word_freq[word] = 1
-
-    word_freq = pd.DataFrame.from_dict(word_freq, orient='index', columns=['count'])
-    word_freq['perc'] = word_freq['count'] / pc_total_feats[pc_idx]
-    word_freq = word_freq.sort_values(by='perc', ascending=False)
-    px.bar(word_freq['perc']).show()
+    df = {'word': [], 'sw_idx': [], 'count': []}
+    curr_pc = pc_feats[pc_idx]
+    total_feats = len(curr_pc)
+    for feat in curr_pc:
+        feat = feat.replace('FS_', '')
+        subwords = feat.split('_')
+        for j, sw in enumerate(subwords):
+            df['word'].append(sw)
+            df['sw_idx'].append(j)
+            df['count'].append(1)
+    
+    summary = pd.DataFrame(df)
+    summary = summary.groupby(['word', 'sw_idx']).count()
+    summary['freq'] = summary['count'] / total_feats
+    
+    summary = summary.sort_values(by='freq', ascending=False).reset_index()
+    px.bar(summary, y='freq', x='word', color='sw_idx').show()
 
 
 def pca_reduce(X: pd.DataFrame, n_feats: int = 2) -> np.ndarray:
