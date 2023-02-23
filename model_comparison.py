@@ -10,10 +10,9 @@ def model_compare(dfs: List[pd.DataFrame], data_label: List[str], k: int, models
         y = (df['Gender'] == 'F').astype(int)
         X = df.drop(['Gender'], axis=1)
         # print(X)
-        print(df.groupby('Gender').count())
 
         for model in models:
-            train, test, _ = k_fold_train_model(X, y, k, model)
+            train, test, _ = k_fold_train_model(X, y, k, model, verbose=False)
             results['model'].append(model)
             results['data'].append(label)
             results['train_acc'].append(train)
