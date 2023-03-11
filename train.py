@@ -8,7 +8,7 @@ from typing import Tuple
 from xgboost import XGBClassifier, plot_tree, to_graphviz, plot_importance
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
 def train_model(X_train, X_test, y_train, y_test, model, verbose:bool = True) -> Tuple[float, float, object]:
     # Fit the model
@@ -27,11 +27,13 @@ def train_model(X_train, X_test, y_train, y_test, model, verbose:bool = True) ->
     # Calculate training accuracy
     y_pred = clf.predict(X_train)
     train_acc = accuracy_score(y_train, y_pred)
-    y_pred = clf.predict(X_test)
-    test_acc = accuracy_score(y_test, y_pred)
-    
+    y_pred_test = clf.predict(X_test)
+    test_acc = accuracy_score(y_test, y_pred_test)
+
+
     if verbose:
-        print(f'Model: {model}, Training accuracy: {train_acc}, Test accuracy: {test_acc}')
+        print(f'Model: {model}, Training accuracy: {np.round(train_acc, decimals =4)}, '
+              f'Test accuracy: {np.round(test_acc, decimals =4)}')
 
     if verbose:
         if model == 'xgboost-explained':
