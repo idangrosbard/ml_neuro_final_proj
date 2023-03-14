@@ -126,14 +126,13 @@ def identify_leakage(df, col):
     corr = df.corr()
     px.bar(corr['F'].sort_values(ascending=False)).show()
 
+def age_to_num(df):
+    df['Age'] = df['Age'].str.split('-')[0]
 
 def explore_categorical(df):
     for col in df.columns:
         num_uniques = len(set(df[col]))
-        if num_uniques >10:
-            print( f'{col}: {num_uniques}')
-        else:
-            print (f'{col}: {set(df[col])}')
+        print (f'{col}: {(df[col].unique()[:10])}')
 
 def plot_search_results(model_searcher, N_ESTIMATORS):
     data = pd.DataFrame(model_searcher.cv_results_)[PARAM_COLUMNS].copy()
