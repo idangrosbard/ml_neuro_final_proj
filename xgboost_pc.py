@@ -17,7 +17,7 @@ def xgboost_pc_progression(data : pd.DataFrame, n_pcs: List[int]):
     
     for n_pc in tqdm(n_pcs):
         copy = data.copy()
-        importances = xgboost_pc(copy, n_pc)
+        importances, _ = xgboost_pc(copy, n_pc)
         for feature, importance in importances.items():
             pcs_df['pc'].append(feature)
             pcs_df['importance'].append(importance)

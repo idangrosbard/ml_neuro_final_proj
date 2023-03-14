@@ -69,11 +69,13 @@ def plot_pca_feature_correlation(X: pd.DataFrame):
     pca.fit(normed)
 
     # calculate the correlation between each feature and each principal component
-    feat_norms = np.linalg.norm(normed.to_numpy(), 2.0, axis=1)[:, np.newaxis]
-    row_normed = normed.to_numpy() / feat_norms
-    corr_mat = row_normed @ pca.components_.transpose()
+    corr_mat = np.corrcoef(normed.to_numpy(), pca.components_.transpose())
+    corr_mat = corr_mat[:normed.shape[1], normed.shape[1]:].transpose()
+    # feat_norms = np.linalg.norm(normed.to_numpy(), 2.0, axis=1)[:, np.newaxis]
+    # row_normed = norm_rows(normed.to_numpy())
+    # corr_mat = row_normed @ norm_rows(pca.components_).transpose()
     print(corr_mat.shape)
-    corr_mat = pd.DataFrame(corr_mat, columns=X.columns)
+    corr_mat = pd.DataFrame(corr_mat * corr_mat, columns=X.columns)
     
     px.imshow(corr_mat).show()
     
@@ -102,7 +104,7 @@ def show_data_balance(data):
 
 
 
-COLORS = "red", "green", "blue"
+COLORS = "red", "green", "blue", "orange", "purple", "brown", "pink", "gray", "olive", "cyan"
 PARAM_COLUMNS = [
     "param_max_depth", "param_n_estimators", "mean_train_score",
     "mean_test_score", "std_train_score", "std_test_score"
@@ -147,7 +149,7 @@ def plot_search_results(model_searcher, N_ESTIMATORS):
         grp.plot(kind="line",
                  x="Number of Estimators",
                  y="Mean Test Score",
-                 color=COLORS[i],
+                 color=COLORS[i % len(COLORS)],
                  label=str(key),
                  ax=param_ax)
         score_mean = grp["Mean Test Score"]
@@ -157,7 +159,7 @@ def plot_search_results(model_searcher, N_ESTIMATORS):
         param_ax.fill_between(N_ESTIMATORS,
                               score_lower_limit,
                               score_upper_limit,
-                              color=COLORS[i],
+                              color=COLORS[i % len(COLORS)],
                               alpha=0.1)
     param_ax.set_ylabel("Accuracy")
     param_ax.scatter(model_searcher.best_params_["n_estimators"],

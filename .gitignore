@@ -1,3 +1,9 @@
 /.ipynb_checkpoints
 /Untitled.ipynb
 __pycache__/*.pyc
+*.csv
+*.pdf
+*.json
+*.gv
+.gitignore
+plots/*
