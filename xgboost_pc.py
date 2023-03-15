@@ -13,11 +13,14 @@ from tqdm.notebook import tqdm
 def xgboost_pc_progression(data : pd.DataFrame, n_pcs: List[int]):
     pcs_df = {'pc': [], 'importance': [], 'n_feats': []}
     max_pc = max(n_pcs)
-    test_accs = []
+    test_accs = {'n_feats': [], 'test_acc': []}
     
     for n_pc in tqdm(n_pcs):
         copy = data.copy()
-        importances, _ = xgboost_pc(copy, n_pc)
+        importances, test_acc = xgboost_pc(copy, n_pc)
+        test_accs['n_feats'].append(n_pc)
+        test_accs['test_acc'].append(test_acc)
+
         for feature, importance in importances.items():
             pcs_df['pc'].append(feature)
             pcs_df['importance'].append(importance)
@@ -30,6 +33,7 @@ def xgboost_pc_progression(data : pd.DataFrame, n_pcs: List[int]):
     pcs_df = pd.DataFrame(pcs_df)
 
     px.line(pcs_df, x='n_feats', y='importance', color='pc', log_x=True).show()
+    px.line(pd.DataFrame(test_accs), x='n_feats', y='test_acc', log_x=True).show()
 
 
 def xgboost_pc(data : pd.DataFrame, n_pc: int):
